@@ -1,16 +1,16 @@
 
 from frappe import _
 
-app_name = "erpnext"
-app_title = "ERPNext"
-app_publisher = "Frappe Technologies Pvt. Ltd."
-app_description = """ERP made simple"""
-app_icon = "fa fa-th"
-app_color = "#e74c3c"
-app_email = "info@erpnext.com"
+app_name = "z1n"
+app_title = "Z1N"
+app_publisher = "Zirrus One"
+app_description = """Find Your Peace. Find Your Z1N."""
+app_icon = "fa fa-rocket"
+app_color = "#003086"
+app_email = "z1n@zirrusone.com"
 app_license = "GNU General Public License (v3)"
 source_link = "https://github.com/frappe/erpnext"
-app_logo_url = "/assets/erpnext/images/erpnext-logo.svg"
+app_logo_url = "/assets/z1n/images/z1n-logo.png"
 
 
 develop_version = '13.x.x-develop'
@@ -80,8 +80,8 @@ website_generators = ["Item Group", "Website Item", "BOM", "Sales Partner",
 	"Job Opening", "Student Admission"]
 
 website_context = {
-	"favicon": 	"/assets/erpnext/images/erpnext-favicon.svg",
-	"splash_image": "/assets/erpnext/images/erpnext-logo.svg"
+	"favicon": 	"/assets/z1n/images/z1n-favicon.png",
+	"splash_image": "/assets/z1n/images/z1n-logo.png"
 }
 
 website_route_rules = [
