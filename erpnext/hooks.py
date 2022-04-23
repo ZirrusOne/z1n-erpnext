@@ -103,7 +103,7 @@ website_generators = [
 ]
 
 website_context = {
-	"favicon": 	    "/assets/z1n/images/z1n-favicon.png",
+	"favicon": "/assets/z1n/images/z1n-favicon.png",
 	"splash_image": "/assets/z1n/images/z1n-logo.png"
 }
 
