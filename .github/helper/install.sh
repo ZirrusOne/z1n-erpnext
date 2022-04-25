@@ -9,11 +9,7 @@ sudo apt-get install redis-server libcups2-dev
 pip install frappe-bench
 
 git clone https://github.com/ZirrusOne/z1n-frappe --branch "${GITHUB_BASE_REF:-${GITHUB_REF##*/}}" --depth 1
-<<<<<<< Updated upstream
-bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
-=======
 bench init --skip-assets --frappe-path ~/z1n-frappe --python "$(which python)" frappe-bench
->>>>>>> Stashed changes
 
 mkdir ~/frappe-bench/sites/test_site
 cp -r "${GITHUB_WORKSPACE}/.github/helper/site_config.json" ~/frappe-bench/sites/test_site/
