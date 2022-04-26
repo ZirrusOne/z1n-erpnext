@@ -8,8 +8,8 @@ sudo apt-get install redis-server libcups2-dev
 
 pip install frappe-bench
 
-git clone https://github.com/frappe/frappe --branch "${GITHUB_BASE_REF:-${GITHUB_REF##*/}}" --depth 1
-bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
+git clone https://github.com/ZirrusOne/z1n-frappe --branch "${GITHUB_BASE_REF:-${GITHUB_REF##*/}}" --depth 1
+bench init --skip-assets --frappe-path ~/z1n-frappe --python "$(which python)" frappe-bench
 
 mkdir ~/frappe-bench/sites/test_site
 cp -r "${GITHUB_WORKSPACE}/.github/helper/site_config.json" ~/frappe-bench/sites/test_site/
@@ -36,6 +36,6 @@ sed -i 's/schedule:/# schedule:/g' Procfile
 sed -i 's/socketio:/# socketio:/g' Procfile
 sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
 
-bench get-app erpnext "${GITHUB_WORKSPACE}"
+bench get-app https://github.com/ZirrusOne/z1n-erpnext.git "${GITHUB_WORKSPACE}"
 bench start &> bench_run_logs.txt &
 bench --site test_site reinstall --yes
