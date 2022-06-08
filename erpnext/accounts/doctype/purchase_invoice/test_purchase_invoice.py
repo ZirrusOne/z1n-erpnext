@@ -1449,7 +1449,8 @@ class TestPurchaseInvoice(unittest.TestCase):
 		self.assertEqual(payment_entry.taxes[0].allocated_amount, 0)
 
 	def test_provisional_accounting_entry(self):
-		item = create_item("_Test Non Stock Item", is_stock_item=0)
+		create_item("_Test Non Stock Item", is_stock_item=0)
+
 		provisional_account = create_account(
 			account_name="Provision Account",
 			parent_account="Current Liabilities - _TC",
@@ -1472,6 +1473,8 @@ class TestPurchaseInvoice(unittest.TestCase):
 		pi.save()
 		pi.submit()
 
+		self.assertEquals(pr.items[0].provisional_expense_account, "Provision Account - _TC")
+
 		# Check GLE for Purchase Invoice
 		expected_gle = [
 			["Cost of Goods Sold - _TC", 250, 0, add_days(pr.posting_date, -1)],
@@ -1488,6 +1491,18 @@ class TestPurchaseInvoice(unittest.TestCase):
 		]
 
 		check_gl_entries(self, pr.name, expected_gle_for_purchase_receipt, pr.posting_date)
+
+		# Cancel purchase invoice to check reverse provisional entry cancellation
+		pi.cancel()
+
+		expected_gle_for_purchase_receipt_post_pi_cancel = [
+			["Provision Account - _TC", 0, 250, pi.posting_date],
+			["_Test Account Cost for Goods Sold - _TC", 250, 0, pi.posting_date],
+		]
+
+		check_gl_entries(
+			self, pr.name, expected_gle_for_purchase_receipt_post_pi_cancel, pr.posting_date
+		)
 
 		company.enable_provisional_accounting_for_non_stock_items = 0
 		company.save()
