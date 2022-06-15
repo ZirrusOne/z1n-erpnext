@@ -26,6 +26,7 @@ class Quotation(SellingController):
 		self.set_status()
 		self.validate_uom_is_integer("stock_uom", "qty")
 		self.validate_valid_till()
+		self.validate_shopping_cart_items()
 		self.set_customer_name()
 		if self.items:
 			self.with_items = 1
@@ -38,8 +39,52 @@ class Quotation(SellingController):
 		if self.valid_till and getdate(self.valid_till) < getdate(self.transaction_date):
 			frappe.throw(_("Valid till date cannot be before transaction date"))
 
-	def has_sales_order(self):
-		return frappe.db.get_value("Sales Order Item", {"prevdoc_docname": self.name, "docstatus": 1})
+	def validate_shopping_cart_items(self):
+		if self.order_type != "Shopping Cart":
+			return
+
+		for item in self.items:
+			has_web_item = frappe.db.exists("Website Item", {"item_code": item.item_code})
+
+			# If variant is unpublished but template is published: valid
+			template = frappe.get_cached_value("Item", item.item_code, "variant_of")
+			if template and not has_web_item:
+				has_web_item = frappe.db.exists("Website Item", {"item_code": template})
+
+			if not has_web_item:
+				frappe.throw(
+					_("Row #{0}: Item {1} must have a Website Item for Shopping Cart Quotations").format(
+						item.idx, frappe.bold(item.item_code)
+					),
+					title=_("Unpublished Item"),
+				)
+
+	def get_ordered_status(self):
+		ordered_items = frappe._dict(
+			frappe.db.get_all(
+				"Sales Order Item",
+				{"prevdoc_docname": self.name, "docstatus": 1},
+				["item_code", "sum(qty)"],
+				group_by="item_code",
+				as_list=1,
+			)
+		)
+
+		status = "Open"
+		if ordered_items:
+			status = "Ordered"
+
+			for item in self.get("items"):
+				if item.qty > ordered_items.get(item.item_code, 0.0):
+					status = "Partially Ordered"
+
+		return status
+
+	def is_fully_ordered(self):
+		return self.get_ordered_status() == "Ordered"
+
+	def is_partially_ordered(self):
+		return self.get_ordered_status() == "Partially Ordered"
 
 	def update_lead(self):
 		if self.quotation_to == "Lead" and self.party_name:
